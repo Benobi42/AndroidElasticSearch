@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import ca.ualberta.ssrg.androidelasticsearch.R;
@@ -44,7 +46,7 @@ public class MainActivity extends Activity {
 		movieList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int pos,	long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 				int movieId = movies.get(pos).getId();
 				startDetailsActivity(movieId);
 			}
@@ -65,13 +67,14 @@ public class MainActivity extends Activity {
 				return true;
 			}
 		});
+
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		
-		
+		// You cannot access the network on the GUI Thread, create thread for network connection
 		SearchThread thread = new SearchThread("*");
 
 		thread.start();
@@ -101,9 +104,12 @@ public class MainActivity extends Activity {
 		movies.clear();
 
 		// TODO: Extract search query from text view
-		
+		EditText searchText = (EditText) findViewById(R.id.editText1);
+		String searchQuery = searchText.getText().toString();
+
 		// TODO: Run the search thread
-		
+		SearchThread searchThread = new SearchThread(searchQuery);
+		searchThread.start();
 	}
 	
 	/**
